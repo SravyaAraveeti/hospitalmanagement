@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Hospital Registration</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#f3f6fb;
+      --card:#ffffff;
+      --primary:#2563eb;
+      --muted:#6b7280;
+      --danger:#ef4444;
+      --success:#059669;
+      --radius:12px;
+      --glass: rgba(37,99,235,0.08);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,var(--bg),#eef4ff 60%);
+      color:#111827;
+      padding:28px;
+    }
+
+    .page{max-width:980px;margin:28px auto;padding:12px}
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:0 10px 30px rgba(12,32,63,0.08);
+      padding:20px;
+      overflow:hidden;
+      transition:transform .18s ease;
+    }
+    .card:hover{transform:translateY(-4px)}
+
+    .header{
+      display:flex;align-items:center;gap:16px;margin-bottom:18px;
+    }
+    .logo{
+      width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#4f46e5);display:flex;
+      align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;box-shadow:0 6px 18px rgba(37,99,235,0.12);
+    }
+    h1{margin:0;font-size:20px}
+    p.lead{margin:4px 0 12px;color:var(--muted);font-size:14px}
+
+    form{display:grid;grid-template-columns:1fr;gap:14px}
+
+    .two-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+    label{display:block;font-size:13px;color:#374151}
+    input, select, textarea{
+      width:100%;padding:10px 12px;border-radius:10px;border:1px solid #e6edf8;background:#fcfeff;
+      font-size:14px;color:#0f172a;outline: none;
+      transition: box-shadow .12s ease, border-color .12s ease, transform .06s ease;
+    }
+    input::placeholder,textarea::placeholder{color:#9aa4b2}
+    input:focus,select:focus,textarea:focus{
+      border-color:var(--primary);box-shadow:0 6px 18px var(--glass);transform:translateY(-1px);
+    }
+    .small{font-size:12px;color:var(--muted);margin-top:6px}
+
+    .actions{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:6px}
+    .btn{
+      background:var(--primary);color:#fff;border:none;padding:10px 16px;border-radius:10px;font-weight:600;cursor:pointer;
+      box-shadow: 0 8px 24px rgba(37,99,235,0.12);transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .btn:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(37,99,235,0.18)}
+    .link{color:var(--primary);text-decoration:none;font-size:14px}
+
+    .alert{padding:10px;border-radius:10px;display:none;font-weight:600}
+    .alert.ok{background:#ecfdf5;color:var(--success);display:block}
+    .alert.err{background:#fff1f2;color:var(--danger);display:block}
+
+    .field-error{color:var(--danger);font-size:13px;margin-top:6px;min-height:18px}
+    .invalid{border-color:var(--danger)!important;box-shadow:0 6px 18px rgba(239,68,68,0.06) !important}
+
+    /* responsive */
+    @media (max-width:800px){
+      .two-cols,.grid-3{grid-template-columns:1fr}
+      .header{gap:12px}
+      .logo{width:48px;height:48px;font-size:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <div class="header">
+        <div class="logo">HM</div>
+        <div>
+          <h1>Register Hospital</h1>
+          <p class="lead"> </p>
+        </div>
+      </div>
+
+      <form id="registerForm" autocomplete="off" novalidate>
+        <!-- USER / PASS at top -->
+        <div class="two-cols">
+          <label>Username
+            <input name="username" required placeholder="choose a username (3-50 chars)"/>
+            <span class="field-error" data-field="username"></span>
+          </label>
+
+          <label>Password
+            <input name="password" type="password" required placeholder="at least 6 characters"/>
+            <span class="field-error" data-field="password"></span>
+          </label>
+        </div>
+
+        <!-- Hospital name and contact -->
+        <div class="two-cols">
+          <label>Hospital Name
+            <input name="hospitalName" required placeholder="e.g. City Care Hospital"/>
+            <span class="field-error" data-field="hospitalName"></span>
+          </label>
+
+          <label>Contact Number
+            <input name="contactNumber" type="tel" placeholder="10 digit mobile number"/>
+            <span class="field-error" data-field="contactNumber"></span>
+          </label>
+        </div>
+
+        <label>Address
+          <input name="address" placeholder="Street, locality, city, state, pincode"/>
+          <span class="field-error" data-field="address"></span>
+        </label>
+
+        <div class="two-cols">
+          <label>Email
+            <input name="email" type="email" placeholder="contact@hospital.com"/>
+            <span class="field-error" data-field="email"></span>
+          </label>
+
+          <!-- Hospital Type now a select -->
+          <label>Hospital Type
+            <select name="hospitalType">
+              <option value="">Select type</option>
+              <option>General</option>
+              <option>Specialty</option>
+              <option>Clinic</option>
+              <option>Teaching</option>
+              <option>Diagnostic Center</option>
+              <option>Government</option>
+              <option>Private</option>
+            </select>
+            <span class="field-error" data-field="hospitalType"></span>
+            <div class="small">Pick the category that best represents your facility.</div>
+          </label>
+        </div>
+
+        <div class="two-cols">
+          <label>Website
+            <input name="website" type="url" placeholder="https://example.com"/>
+            <span class="field-error" data-field="website"></span>
+          </label>
+
+          <label>Registration No.
+            <input name="registrationNumber" placeholder="Registration/License number"/>
+            <span class="field-error" data-field="registrationNumber"></span>
+          </label>
+        </div>
+
+        <div class="two-cols">
+          <label>Year Established
+            <input name="yearEstablished" type="number" min="1800" max="2100" placeholder="e.g. 1998"/>
+            <span class="field-error" data-field="yearEstablished"></span>
+          </label>
+
+          <label>Outpatient Fee
+            <input name="outpatientFee" type="number" step="0.01" placeholder="e.g. 250.00"/>
+            <span class="field-error" data-field="outpatientFee"></span>
+          </label>
+        </div>
+
+        <div class="two-cols">
+          <label>Bed Availability
+            <input name="bedAvailability" type="number" min="0" placeholder="number of beds"/>
+            <span class="field-error" data-field="bedAvailability"></span>
+          </label>
+
+          <label>Bed Category
+            <input name="bedCategory" placeholder="e.g. ICU / General / Maternity"/>
+            <span class="field-error" data-field="bedCategory"></span>
+          </label>
+        </div>
+
+        <div class="grid-3">
+          <label>Emergency Services
+            <select name="emergencyServices"><option value="false">No</option><option value="true">Yes</option></select>
+            <span class="field-error" data-field="emergencyServices"></span>
+          </label>
+
+          <label>Ambulance Availability
+            <select name="ambulanceAvailability"><option value="false">No</option><option value="true">Yes</option></select>
+            <span class="field-error" data-field="ambulanceAvailability"></span>
+          </label>
+
+          <label>Pharmacy Onsite
+            <select name="pharmacyOnsite"><option value="false">No</option><option value="true">Yes</option></select>
+            <span class="field-error" data-field="pharmacyOnsite"></span>
+          </label>
+        </div>
+
+        <label>Departments (comma separated)
+          <textarea name="departments" rows="2" placeholder="Cardiology, Pediatrics, ..."></textarea>
+          <span class="field-error" data-field="departments"></span>
+        </label>
+
+        <label>Diagnostic Services (comma separated)
+          <textarea name="diagnosticServices" rows="2" placeholder="X-ray, CT, MRI, Pathology"></textarea>
+          <span class="field-error" data-field="diagnosticServices"></span>
+        </label>
+
+        <div class="two-cols">
+          <label>Timings
+            <input name="timings" placeholder="08:00-20:00"/>
+            <span class="field-error" data-field="timings"></span>
+          </label>
+
+          <label>24/7 Availability
+            <select name="twentyfourAvailability"><option value="false">No</option><option value="true">Yes</option></select>
+            <span class="field-error" data-field="twentyfourAvailability"></span>
+          </label>
+        </div>
+
+        <label>Languages Spoken (comma separated)
+          <input name="languagesSpoken" placeholder="English, Hindi, ..."/>
+          <span class="field-error" data-field="languagesSpoken"></span>
+        </label>
+
+        <div class="actions">
+          <button type="submit" class="btn">Register Hospital</button>
+          <a class="link" href="/login.html">Already have account / Login</a>
+        </div>
+      </form>
+
+      <div id="alert" role="status" class="alert"></div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('registerForm');
+    const alertDiv = document.getElementById('alert');
+
+    function showAlert(msg, ok = true) {
+      alertDiv.textContent = msg;
+      alertDiv.className = 'alert ' + (ok ? 'ok' : 'err');
+      setTimeout(() => { alertDiv.textContent = ''; alertDiv.className = ''; }, 6000);
+    }
+
+    const patterns = {
+      name: /^[A-Za-z ]+$/,
+      contact: /^[0-9]{10}$/,
+      email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      url: /^(https?:\/\/)?([^\s.]+\.\S{2,}|localhost)(\/\S*)?$/,
+      registration: /^[A-Za-z0-9\-\/]+$/,
+      timings: /^([01]\d|2[0-3]):[0-5]\d-([01]\d|2[0-3]):[0-5]\d$/
+    };
+
+    function clearFieldErrors() {
+      document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+      document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+    }
+
+    function setFieldError(fieldName, msg) {
+      const el = document.querySelector('.field-error[data-field="'+fieldName+'"]');
+      if (el) {
+        el.textContent = msg;
+        const input = el.previousElementSibling;
+        if (input) input.classList.add('invalid');
+      }
+    }
+
+    function validateForm(data) {
+      const errors = {};
+
+      if (!data.username) {
+        errors.username = 'Username is required';
+      } else if (data.username.length < 3 || data.username.length > 50) {
+        errors.username = 'Username must be 3-50 characters';
+      } else if (!/^[A-Za-z0-9._-]+$/.test(data.username)) {
+        errors.username = 'Username can contain letters, numbers, dot, underscore and dash only';
+      }
+
+      if (!data.password) {
+        errors.password = 'Password is required';
+      } else if (data.password.length < 6) {
+        errors.password = 'Password must be at least 6 characters';
+      }
+
+      // hospitalName
+      if (!data.hospitalName) {
+        errors.hospitalName = 'Hospital name is required';
+      } else if (!patterns.name.test(data.hospitalName)) {
+        errors.hospitalName = 'Hospital name must contain only letters and spaces';
+      } else if (data.hospitalName.length > 150) {
+        errors.hospitalName = 'Hospital name too long';
+      }
+
+      // contactNumber
+      if (!data.contactNumber) {
+        errors.contactNumber = 'Contact number is required';
+      } else if (!patterns.contact.test(data.contactNumber)) {
+        errors.contactNumber = 'Contact number must be exactly 10 digits';
+      }
+
+      // email
+      if (data.email && !patterns.email.test(data.email)) errors.email = 'Invalid email';
+
+      // website
+      if (data.website && !patterns.url.test(data.website)) errors.website = 'Invalid website URL';
+
+      // registrationNumber
+      if (data.registrationNumber && !patterns.registration.test(data.registrationNumber)) {
+        errors.registrationNumber = 'Invalid registration number';
+      }
+
+      // yearEstablished
+      if (data.yearEstablished !== '' && data.yearEstablished !== null && data.yearEstablished !== undefined) {
+        const y = Number(data.yearEstablished);
+        if (!Number.isInteger(y) || y < 1800 || y > 2100) errors.yearEstablished = 'Year must be integer between 1800 and 2100';
+      }
+
+      // outpatientFee
+      if (data.outpatientFee !== '' && data.outpatientFee !== null && data.outpatientFee !== undefined) {
+        const f = Number(data.outpatientFee);
+        if (Number.isNaN(f) || f < 0) errors.outpatientFee = 'Outpatient fee must be a non-negative number';
+      }
+
+      // bedAvailability
+      if (data.bedAvailability !== '' && data.bedAvailability !== null && data.bedAvailability !== undefined) {
+        const b = Number(data.bedAvailability);
+        if (!Number.isInteger(b) || b < 0) errors.bedAvailability = 'Bed availability must be a non-negative integer';
+      }
+
+      // timings
+      if (data.timings && !patterns.timings.test(data.timings)) errors.timings = 'Timings must be HH:MM-HH:MM';
+
+      // hospitalType (optional but encouraged)
+      if (!data.hospitalType) errors.hospitalType = 'Please select a hospital type';
+
+      return errors;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearFieldErrors();
+
+      const fd = new FormData(form);
+      const data = Object.fromEntries(fd.entries());
+
+      // convert boolean selects
+      ['emergencyServices','ambulanceAvailability','pharmacyOnsite','twentyfourAvailability']
+        .forEach(k => data[k] = data[k] === 'true');
+
+      // trim string fields
+      for (const k in data) if (typeof data[k] === 'string') data[k] = data[k].trim();
+
+      const errors = validateForm(data);
+      if (Object.keys(errors).length > 0) {
+        Object.entries(errors).forEach(([f,m]) => setFieldError(f,m));
+        showAlert('Please fix the highlighted errors', false);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/hospitals', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify(data)
+        });
+
+        if (!res.ok) {
+          const errBody = await res.json().catch(()=>null);
+          if (errBody && typeof errBody === 'object') {
+            Object.entries(errBody).forEach(([f,m]) => setFieldError(f,m));
+            showAlert(Object.values(errBody).join(', '), false);
+          } else {
+            const text = await res.text().catch(()=>res.statusText);
+            showAlert('Error: ' + (text || res.statusText), false);
+          }
+          return;
+        }
+
+        const created = await res.json();
+        showAlert('Registered successfully (id=' + (created.id || 'n/a') + ')', true);
+
+        // Demo auth storage (insecure — for demo only)
+        localStorage.setItem('demo_auth_username', data.username);
+        localStorage.setItem('demo_auth_password', data.password);
+        localStorage.setItem('demo_hospital_'+data.username, JSON.stringify(created));
+
+        form.reset();
+      } catch (err) {
+        showAlert('Network error: ' + err.message, false);
+      }
+    });
+  </script>
+</body>
+</html>

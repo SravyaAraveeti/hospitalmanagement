@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Hospitals Dashboard</title>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <h1>Hospitals</h1>
+      <div style="margin-bottom:12px">
+        <a class="btn" href="/register.html">New Hospital</a>
+        <button id="refreshBtn" class="btn" style="background:#3b7">Refresh</button>
+      </div>
+
+      <div id="list"></div>
+
+      <div id="editor" style="margin-top:18px;"></div>
+    </div>
+  </div>
+
+<script>
+const listEl = document.getElementById('list');
+const editor = document.getElementById('editor');
+
+async function fetchList(){
+  listEl.innerHTML = 'Loading...';
+  const res = await fetch('/api/hospitals');
+  const arr = await res.json();
+  if(!arr.length) { listEl.innerHTML = '<i>No hospitals found</i>'; return; }
+
+  const rows = arr.map(h => {
+    return `
+      <div class="row-item">
+        <strong>${escapeHtml(h.hospitalName || '—')}</strong> — ${escapeHtml(h.address || '')}
+        <div class="row-actions">
+          <button onclick="openEdit(${h.id})">Edit</button>
+          <button onclick="del(${h.id})">Delete</button>
+        </div>
+      </div>
+    `;
+  });
+  listEl.innerHTML = rows.join('');
+}
+
+function escapeHtml(s){ return (s+'').replace(/[&<>"'`]/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'})[c]); }
+
+async function del(id){
+  if(!confirm('Delete hospital id='+id+' ?')) return;
+  const res = await fetch('/api/hospitals/'+id, { method:'DELETE' });
+  if(res.ok){ alert('Deleted'); fetchList(); } else { alert('Delete failed'); }
+}
+
+async function openEdit(id){
+  editor.innerHTML = 'Loading...';
+  const res = await fetch('/api/hospitals/'+id);
+  const h = await res.json();
+
+  editor.innerHTML = `
+    <h3>Edit #${h.id}</h3>
+    <form id="editForm">
+      <label>Hospital Name <input name="hospitalName" value="${escapeHtml(h.hospitalName||'')}" required></label>
+      <label>Address <input name="address" value="${escapeHtml(h.address||'')}" ></label>
+      <label>Contact Number <input name="contactNumber" value="${escapeHtml(h.contactNumber||'')}" ></label>
+      <div style="margin-top:8px">
+        <button type="submit" class="btn">Save</button>
+        <button type="button" onclick="editor.innerHTML='';">Cancel</button>
+      </div>
+    </form>
+  `;
+  document.getElementById('editForm').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const data = Object.fromEntries(fd.entries());
+    const putRes = await fetch('/api/hospitals/'+id, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+    if(putRes.ok){ alert('Updated'); editor.innerHTML=''; fetchList(); }
+    else { alert('Update failed'); }
+  });
+}
+
+document.getElementById('refreshBtn').addEventListener('click', fetchList);
+fetchList();
+</script>
+</body>
+</html>
